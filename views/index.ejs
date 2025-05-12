@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Review System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; outline: none;}
+    body { font-family: 'Arial', sans-serif; padding: 40px; color: lightblue; background-color: pink;}
+    h1 { text-align: center; margin-bottom: 2rem; font-size: 2.5rem; color: lightblue; }
+
+    /* Stars for rating */
+    .stars input { display: none; }
+    .stars label { font-size: 2rem; color: #ccc; cursor: pointer; transition: color 0.2s ease; }
+    .stars input:checked ~ label, .stars label:hover, .stars label:hover ~ label { color: gold; }
+
+    /* Form styling */
+    form { background: tan; color: lightblue; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(121, 249, 237, 0.1); margin-bottom: 2rem; }
+    input, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; color: lightblue; }
+    textarea { min-height: 150px; resize: vertical; }
+    input[type="file"] { padding: 10px; background: #fafafa; font-size: 1rem; color: lightblue; }
+    button { background-color: lightblue; color: white; padding: 12px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease; border: 2px solid #000; }
+    button:hover { background-color: lightskyblue; }
+
+    /* Review card styling */
+    .review-card { background-color: tan; padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; color: lightblue; }
+    .review-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); }
+    .review-card h3 { font-size: 1.5rem; color: lightblue; margin-bottom: 0.5rem; }
+    .review-card p { font-size: 1rem; color: lightblue; line-height: 1.6; }
+    .review-card .name-email { font-size: 0.9rem; color: lightblue; margin-bottom: 1rem; }
+    .review-card img { max-width: 150px; border-radius: 8px; margin-top: 1rem; }
+
+    /* Total rating container styling */
+    .total-rating { text-align: right; font-size: 1.8rem; color: lightsalmon; margin-bottom: 2rem; }
+    .total-rating .stars { font-size: 2rem; color: gold; }
+
+    /* Media query for responsiveness */
+    @media (max-width: 768px) { body { padding: 20px; } form { padding: 1.5rem; } .review-card { padding: 1rem; } }
+  </style>
+</head>
+<body>
+  <!-- Total Rating Display -->
+  <div class="total-rating">
+    <span><%= totalRating %> ★</span>
+    <div class="stars">
+      <% for (let i = 1; i <= 5; i++) { %>
+        <i class="fas fa-star" <% if (i <= totalRating) { %> style="color: gold;" <% } %>></i>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Review Submission Form -->
+  <form action="/submit-review" method="POST" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Your Name" required><br>
+    <input type="email" name="email" placeholder="Your Email" required><br>
+    <input type="text" name="title" placeholder="Review Title" required><br>
+    <textarea name="description" placeholder="Review Description" required></textarea><br>
+    <div class="stars">
+      <% for (let i = 5; i >= 1; i--) { %>
+        <input type="radio" name="rating" value="<%= i %>" id="star<%= i %>" required>
+        <label for="star<%= i %>"><i class="fas fa-star"></i></label>
+      <% } %>
+    </div><br>
+    <input type="file" name="image" accept="image/*"><br>
+    <button type="submit">Submit Review</button>
+  </form>
+
+  <br>
+
+  <!-- Reviews Display -->
+  <% reviews.forEach(review => { %>
+    <div class="review-card">
+      <h3><%= review.title %> (<%= review.rating %>★)</h3>
+      <p class="name-email"><strong>By: <%= review.name %> (<%= review.email %>)</strong></p>
+      <p><%= review.description %></p>
+      <% if (review.image) { %>
+        <img src="<%= review.image %>" alt="Review Image">
+      <% } %>
+    </div>
+  <% }) %>
+</body>
+</html>
